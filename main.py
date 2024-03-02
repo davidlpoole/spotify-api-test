@@ -41,24 +41,57 @@ def get_access_token(client_id, client_secret):
         return None
 
 
-def get_artist_info(artist_id, access_token):
-    url = f"https://api.spotify.com/v1/artists/{artist_id}"
+# def get_artist_info(artist_id, access_token):
+#     url = f"https://api.spotify.com/v1/artists/{artist_id}"
+#     headers = {"Authorization": f"Bearer {access_token}"}
+
+#     response = requests.get(url, headers=headers)
+#     if response.status_code == 200:
+#         artist_info = response.json()
+#         return artist_info
+#     else:
+#         print("Failed to retrieve artist information.")
+#         return None
+
+
+def get_top_tracks(artist_id, access_token):
+    url = f"https://api.spotify.com/v1/artists/{artist_id}/top-tracks"
     headers = {"Authorization": f"Bearer {access_token}"}
 
     response = requests.get(url, headers=headers)
     if response.status_code == 200:
-        artist_info = response.json()
-        return artist_info
+        return response.json()["tracks"]
     else:
-        print("Failed to retrieve artist information.")
+        print("Failed to retrieve top tracks.")
+        return None
+
+
+def get_audio_features(track_id, access_token):
+    url = f"https://api.spotify.com/v1/audio-features/{track_id}"
+    headers = {"Authorization": f"Bearer {access_token}"}
+
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print(f"Failed to retrieve audio features for track {track_id}.")
         return None
 
 
 access_token = get_access_token(CLIENT_ID, CLIENT_SECRET)
 
-if access_token:
-    print(access_token)
-    artist_id = "3F3I57bH1shH7osXaQL1H0"  # Replace with your desired artist ID
-    artist_info = get_artist_info(artist_id, access_token)
-    if artist_info:
-        print("Artist information:", artist_info)
+artist_id = "3F3I57bH1shH7osXaQL1H0"
+
+# if access_token:
+#     print(access_token)
+#     artist_info = get_artist_info(artist_id, access_token)
+#     if artist_info:
+#         print("Artist information:", artist_info)
+
+top_tracks = get_top_tracks(artist_id, access_token)
+if top_tracks:
+    for track in top_tracks:
+        track_id = track["id"]
+        audio_features = get_audio_features(track_id, access_token)
+        if audio_features:
+            print(f"Audio features for track {track_id}:", audio_features)
