@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top Tracks Audio Features</title>
+</head>
+<body>
+    <h1>Top Tracks Audio Features</h1>
+    <ul>
+        {% for audio_feature in audio_features_list %}
+            <li>
+                <strong>Track ID:</strong> {{ audio_feature['track_id'] }}<br>
+                <ul>
+                    {% for key, value in audio_feature['features'].items() %}
+                        <li><strong>{{ key|title }}:</strong> {{ value }}</li>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

@@ -1,6 +1,9 @@
+from flask import Flask, render_template
 import os
 import requests
 import time
+
+app = Flask(__name__)
 
 # Load environment variables from .env file
 from dotenv import load_dotenv
@@ -41,19 +44,6 @@ def get_access_token(client_id, client_secret):
         return None
 
 
-# def get_artist_info(artist_id, access_token):
-#     url = f"https://api.spotify.com/v1/artists/{artist_id}"
-#     headers = {"Authorization": f"Bearer {access_token}"}
-
-#     response = requests.get(url, headers=headers)
-#     if response.status_code == 200:
-#         artist_info = response.json()
-#         return artist_info
-#     else:
-#         print("Failed to retrieve artist information.")
-#         return None
-
-
 def get_top_tracks(artist_id, access_token):
     url = f"https://api.spotify.com/v1/artists/{artist_id}/top-tracks"
     headers = {"Authorization": f"Bearer {access_token}"}
@@ -78,20 +68,25 @@ def get_audio_features(track_id, access_token):
         return None
 
 
-access_token = get_access_token(CLIENT_ID, CLIENT_SECRET)
+@app.route("/")
+def index():
+    artist_id = "3F3I57bH1shH7osXaQL1H0"
+    access_token = get_access_token(CLIENT_ID, CLIENT_SECRET)
+    if access_token:
+        top_tracks = get_top_tracks(artist_id, access_token)
+        audio_features_list = []
+        if top_tracks:
+            for track in top_tracks:
+                track_id = track["id"]
+                audio_features = get_audio_features(track_id, access_token)
+                if audio_features:
+                    audio_features_list.append(
+                        {"track_id": track_id, "features": audio_features}
+                    )
+        return render_template("index.html", audio_features_list=audio_features_list)
+    else:
+        return "Failed to retrieve access token."
 
-artist_id = "3F3I57bH1shH7osXaQL1H0"
 
-# if access_token:
-#     print(access_token)
-#     artist_info = get_artist_info(artist_id, access_token)
-#     if artist_info:
-#         print("Artist information:", artist_info)
-
-top_tracks = get_top_tracks(artist_id, access_token)
-if top_tracks:
-    for track in top_tracks:
-        track_id = track["id"]
-        audio_features = get_audio_features(track_id, access_token)
-        if audio_features:
-            print(f"Audio features for track {track_id}:", audio_features)
+if __name__ == "__main__":
+    app.run(debug=True)
