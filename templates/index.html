@@ -7,11 +7,11 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <h1>Top Tracks Audio Features</h1>
+    <h1>{{ artist_details }}'s Top Tracks</h1>
     <table>
         <thead>
             <tr>
-                <th>Track ID</th>
+                <th>Track Name</th>
                 {% for feature in desired_features %}
                     <th>{{ feature }}</th>
                 {% endfor %}
@@ -20,7 +20,7 @@
         <tbody>
             {% for audio_feature in audio_features_list %}
                 <tr>
-                    <td>{{ audio_feature['track_id'] }}</td>
+                    <td>{{ audio_feature['track_name'] }}</td>
                     {% for feature in desired_features %}
                         <td>{{ audio_feature['features'][feature.lower()] }}</td>
                     {% endfor %}

@@ -56,6 +56,30 @@ def get_top_tracks(artist_id, access_token):
         return None
 
 
+def get_track_info(track_id, access_token):
+    url = f"https://api.spotify.com/v1/tracks/{track_id}"
+    headers = {"Authorization": f"Bearer {access_token}"}
+
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        return response.json()["name"]
+    else:
+        print("Failed to retrieve top tracks.")
+        return None
+
+
+def get_artist_info(artist_id, access_token):
+    url = f"https://api.spotify.com/v1/artists/{artist_id}"
+    headers = {"Authorization": f"Bearer {access_token}"}
+
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        return response.json()["name"]
+    else:
+        print("Failed to retrieve top tracks.")
+        return None
+
+
 def get_audio_features(track_id, access_token):
     url = f"https://api.spotify.com/v1/audio-features/{track_id}"
     headers = {"Authorization": f"Bearer {access_token}"}
@@ -73,6 +97,7 @@ def index():
     artist_id = "3F3I57bH1shH7osXaQL1H0"
     access_token = get_access_token(CLIENT_ID, CLIENT_SECRET)
     if access_token:
+        artist_details = get_artist_info(artist_id, access_token)
         top_tracks = get_top_tracks(artist_id, access_token)
         desired_features = [
             "Danceability",
@@ -92,13 +117,19 @@ def index():
         if top_tracks:
             for track in top_tracks:
                 track_id = track["id"]
+                track_name = get_track_info(track_id, access_token)
                 audio_features = get_audio_features(track_id, access_token)
                 if audio_features:
                     audio_features_list.append(
-                        {"track_id": track_id, "features": audio_features}
+                        {
+                            "track_id": track_id,
+                            "track_name": track_name,
+                            "features": audio_features,
+                        }
                     )
             return render_template(
                 "index.html",
+                artist_details=artist_details,
                 audio_features_list=audio_features_list,
                 desired_features=desired_features,
             )
