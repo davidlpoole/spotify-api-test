@@ -4,11 +4,13 @@ import time
 
 # Load environment variables from .env file
 from dotenv import load_dotenv
+
 load_dotenv()
 
 # Access environment variables
 CLIENT_ID = os.getenv("CLIENT_ID")
 CLIENT_SECRET = os.getenv("CLIENT_SECRET")
+
 
 def get_access_token(client_id, client_secret):
     access_token_file = "access_token.txt"
@@ -20,13 +22,11 @@ def get_access_token(client_id, client_secret):
                 return access_token
 
     url = "https://accounts.spotify.com/api/token"
-    headers = {
-        "Content-Type": "application/x-www-form-urlencoded"
-    }
+    headers = {"Content-Type": "application/x-www-form-urlencoded"}
     data = {
         "grant_type": "client_credentials",
         "client_id": client_id,
-        "client_secret": client_secret
+        "client_secret": client_secret,
     }
 
     response = requests.post(url, headers=headers, data=data)
@@ -40,11 +40,10 @@ def get_access_token(client_id, client_secret):
         print("Failed to retrieve access token.")
         return None
 
+
 def get_artist_info(artist_id, access_token):
     url = f"https://api.spotify.com/v1/artists/{artist_id}"
-    headers = {
-        "Authorization": f"Bearer {access_token}"
-    }
+    headers = {"Authorization": f"Bearer {access_token}"}
 
     response = requests.get(url, headers=headers)
     if response.status_code == 200:
@@ -53,6 +52,7 @@ def get_artist_info(artist_id, access_token):
     else:
         print("Failed to retrieve artist information.")
         return None
+
 
 access_token = get_access_token(CLIENT_ID, CLIENT_SECRET)
 
