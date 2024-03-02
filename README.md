@@ -1,6 +1,6 @@
-# Project Name
+# Testing the Spotify API
 
-Brief description of your project.
+Get audio features of an artists top tracks for further analysis
 
 ## Getting Started
 
