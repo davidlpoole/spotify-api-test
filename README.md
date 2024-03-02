@@ -2,6 +2,9 @@
 
 Get audio features of an artists top tracks for further analysis
 
+[Available features](https://developer.spotify.com/documentation/web-api/reference/get-audio-features):
+Danceability, Energy, Key, Loudness, Mode, Speechiness, Acousticness, Instrumentalness, Liveness, Valence, Tempo
+
 ## Getting Started
 
 ### Pre-requisites

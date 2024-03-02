@@ -3,7 +3,7 @@ import os
 import requests
 import time
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="static")
 
 # Load environment variables from .env file
 from dotenv import load_dotenv
@@ -74,6 +74,20 @@ def index():
     access_token = get_access_token(CLIENT_ID, CLIENT_SECRET)
     if access_token:
         top_tracks = get_top_tracks(artist_id, access_token)
+        desired_features = [
+            "Danceability",
+            "Energy",
+            "Key",
+            "Loudness",
+            "Mode",
+            "Speechiness",
+            "Acousticness",
+            "Instrumentalness",
+            "Liveness",
+            "Valence",
+            "Tempo",
+        ]
+
         audio_features_list = []
         if top_tracks:
             for track in top_tracks:
@@ -83,9 +97,13 @@ def index():
                     audio_features_list.append(
                         {"track_id": track_id, "features": audio_features}
                     )
-        return render_template("index.html", audio_features_list=audio_features_list)
-    else:
-        return "Failed to retrieve access token."
+            return render_template(
+                "index.html",
+                audio_features_list=audio_features_list,
+                desired_features=desired_features,
+            )
+        else:
+            return "Failed to retrieve access token."
 
 
 if __name__ == "__main__":

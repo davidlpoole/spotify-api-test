@@ -4,20 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Top Tracks Audio Features</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
     <h1>Top Tracks Audio Features</h1>
-    <ul>
-        {% for audio_feature in audio_features_list %}
-            <li>
-                <strong>Track ID:</strong> {{ audio_feature['track_id'] }}<br>
-                <ul>
-                    {% for key, value in audio_feature['features'].items() %}
-                        <li><strong>{{ key|title }}:</strong> {{ value }}</li>
+    <table>
+        <thead>
+            <tr>
+                <th>Track ID</th>
+                {% for feature in desired_features %}
+                    <th>{{ feature }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for audio_feature in audio_features_list %}
+                <tr>
+                    <td>{{ audio_feature['track_id'] }}</td>
+                    {% for feature in desired_features %}
+                        <td>{{ audio_feature['features'][feature.lower()] }}</td>
                     {% endfor %}
-                </ul>
-            </li>
-        {% endfor %}
-    </ul>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </body>
 </html>
