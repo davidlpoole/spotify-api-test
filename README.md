@@ -30,7 +30,7 @@ Before you can run this project, you need to have the following installed:
 
 ### Run the application
 
-`python main.py`
+`python spotify/main.py`
 
 ### Recommended for contributors
 
