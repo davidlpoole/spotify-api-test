@@ -6,28 +6,29 @@ Get audio features of an artists top tracks for further analysis
 
 ### Pre-requisites
 
-Before you can run this project, you need to have the following installed on your machine:
+Before you can run this project, you need to have the following installed:
 
 - Python3
 - pipenv (`pip3 install pipenv`)
 
 ### Installation
 
-Clone the repository:
+1. Clone the repository:  
+`git clone https://github.com/davidlpoole/spotify-api-test`  
+`cd spotify-api-test`
 
-```zsh
-git clone https://github.com/davidlpoole/spotify-api-test
-cd spotify-api-test
-pipenv shell
-pipenv install
-```
+1. Setup the virtual environment:  
+`pipenv shell`
 
-#### Recommended (Optional)
+1. Install the dependencies:  
+`pipenv install`
 
-Install the [Black Formatter extension](https://marketplace.visualstudio.com/items?itemName=ms-python.black-formatter) in VS Code for Python code formatting.
+1. Create a `.env` file from `.env.example` and add your client_id and client_secret from [Spotify Developer Dashboard](https://developer.spotify.com/dashboard)
 
 ### Run the application
 
-```zsh
-python main.py
-```
+`python main.py`
+
+### Recommended for contributors
+
+- Install the [Black Formatter extension](https://marketplace.visualstudio.com/items?itemName=ms-python.black-formatter) in VS Code for Python code formatting.
