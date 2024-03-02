@@ -7,6 +7,13 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
+    <h1>Get details about an artist's top tracks</h1>
+    <form action="/" method="post">
+        <label for="artist_name">Enter Artist Name:</label>
+        <input type="text" id="artist_name" name="artist_name">
+        <button type="submit">Submit</button>
+    </form>
+
     <h1>{{ artist_details }}'s Top Tracks</h1>
     <table>
         <thead>

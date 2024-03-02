@@ -1,18 +1,17 @@
-from flask import Flask, render_template
 import os
 import requests
 import time
-
-app = Flask(__name__, static_folder="static")
-
-# Load environment variables from .env file
 from dotenv import load_dotenv
+from flask import Flask, render_template, request
+import bleach
 
 load_dotenv()
 
 # Access environment variables
 CLIENT_ID = os.getenv("CLIENT_ID")
 CLIENT_SECRET = os.getenv("CLIENT_SECRET")
+
+app = Flask(__name__, static_folder="static")
 
 
 def get_access_token(client_id, client_secret):
@@ -41,6 +40,24 @@ def get_access_token(client_id, client_secret):
         return access_token
     else:
         print("Failed to retrieve access token.")
+        return None
+
+
+def get_first_artist(search_term, access_token):
+    url = f"https://api.spotify.com/v1/search"
+    headers = {"Authorization": f"Bearer {access_token}"}
+    params = {"q": search_term, "type": "artist", "limit": 1}
+
+    response = requests.get(url, headers=headers, params=params)
+    if response.status_code == 200:
+        artists = response.json()["artists"]["items"]
+        if artists:
+            return artists[0]["id"]
+        else:
+            print("No artists found.")
+            return None
+    else:
+        print("Failed to retrieve artists.")
         return None
 
 
@@ -92,19 +109,22 @@ def get_audio_features(track_id, access_token):
         return None
 
 
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 def index():
-    artist_id = "3F3I57bH1shH7osXaQL1H0"
     access_token = get_access_token(CLIENT_ID, CLIENT_SECRET)
     if access_token:
+        if request.method == "POST":
+            artist_name = bleach.clean(request.form.get("artist_name"))
+            artist_id = get_first_artist(artist_name, access_token)
+        else:
+            artist_id = "3F3I57bH1shH7osXaQL1H0"
+
         artist_details = get_artist_info(artist_id, access_token)
         top_tracks = get_top_tracks(artist_id, access_token)
         desired_features = [
             "Danceability",
             "Energy",
-            "Key",
             "Loudness",
-            "Mode",
             "Speechiness",
             "Acousticness",
             "Instrumentalness",
