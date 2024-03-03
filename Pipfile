@@ -6,8 +6,8 @@ name = "pypi"
 [packages]
 requests = "*"
 python-dotenv = "*"
-flask = "*"
 bleach = "*"
+pandas = "*"
 
 [dev-packages]
 
