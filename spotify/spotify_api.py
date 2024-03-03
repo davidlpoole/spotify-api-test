@@ -3,6 +3,19 @@ import requests
 import time
 
 
+def make_spotify_request(endpoint, access_token, params=None):
+    base_url = "https://api.spotify.com/v1/"
+    url = base_url + endpoint
+    headers = {"Authorization": f"Bearer {access_token}"}
+
+    response = requests.get(url, headers=headers, params=params)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print(f"Failed to retrieve data from {endpoint}.")
+        return None
+
+
 def get_access_token(client_id, client_secret):
     access_token_file = "access_token.txt"
 
@@ -33,66 +46,40 @@ def get_access_token(client_id, client_secret):
 
 
 def get_first_artist(search_term, access_token):
-    url = f"https://api.spotify.com/v1/search"
-    headers = {"Authorization": f"Bearer {access_token}"}
+    endpoint = "search"
     params = {"q": search_term, "type": "artist", "limit": 1}
-
-    response = requests.get(url, headers=headers, params=params)
-    if response.status_code == 200:
-        artists = response.json()["artists"]["items"]
+    response = make_spotify_request(endpoint, access_token, params)
+    if response:
+        artists = response["artists"]["items"]
         if artists:
             return artists[0]["id"]
         else:
             print("No artists found.")
             return None
-    else:
-        print("Failed to retrieve artists.")
-        return None
 
 
 def get_top_tracks(artist_id, access_token):
-    url = f"https://api.spotify.com/v1/artists/{artist_id}/top-tracks"
-    headers = {"Authorization": f"Bearer {access_token}"}
-
-    response = requests.get(url, headers=headers)
-    if response.status_code == 200:
-        return response.json()["tracks"]
-    else:
-        print("Failed to retrieve top tracks.")
-        return None
+    endpoint = f"artists/{artist_id}/top-tracks"
+    response = make_spotify_request(endpoint, access_token)
+    if response:
+        return response["tracks"]
 
 
 def get_track_info(track_id, access_token):
-    url = f"https://api.spotify.com/v1/tracks/{track_id}"
-    headers = {"Authorization": f"Bearer {access_token}"}
-
-    response = requests.get(url, headers=headers)
-    if response.status_code == 200:
-        return response.json()["name"]
-    else:
-        print("Failed to retrieve top tracks.")
-        return None
+    endpoint = f"tracks/{track_id}"
+    response = make_spotify_request(endpoint, access_token)
+    if response:
+        return response["name"]
 
 
 def get_artist_info(artist_id, access_token):
-    url = f"https://api.spotify.com/v1/artists/{artist_id}"
-    headers = {"Authorization": f"Bearer {access_token}"}
-
-    response = requests.get(url, headers=headers)
-    if response.status_code == 200:
-        return response.json()["name"]
-    else:
-        print("Failed to retrieve top tracks.")
-        return None
+    endpoint = f"artists/{artist_id}"
+    response = make_spotify_request(endpoint, access_token)
+    if response:
+        return response["name"]
 
 
 def get_audio_features(track_id, access_token):
-    url = f"https://api.spotify.com/v1/audio-features/{track_id}"
-    headers = {"Authorization": f"Bearer {access_token}"}
-
-    response = requests.get(url, headers=headers)
-    if response.status_code == 200:
-        return response.json()
-    else:
-        print(f"Failed to retrieve audio features for track {track_id}.")
-        return None
+    endpoint = f"audio-features/{track_id}"
+    response = make_spotify_request(endpoint, access_token)
+    return response
