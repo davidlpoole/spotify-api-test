@@ -83,7 +83,7 @@ def get_first_artist(search_term):
     if response_json:
         artists = response_json.get("artists", {}).get("items", [])
         if artists:
-            return artists[0]["id"]
+            return [artists[0]["id"], artists[0]["name"]]
         else:
             print("No artists found.")
             return None
@@ -148,7 +148,7 @@ def get_artist_info(artist_id):
         return None
 
 
-def get_audio_features(track_id):
+def get_audio_features(track_ids):
     """
     Retrieve audio features of a track from the Spotify API.
 
@@ -158,7 +158,7 @@ def get_audio_features(track_id):
     Returns:
         dict or None: The audio features of the track if available, or None if not found.
     """
-    url = f"https://api.spotify.com/v1/audio-features/{track_id}"
+    url = f"https://api.spotify.com/v1/audio-features?ids={track_ids}"
     headers = {"Content-Type": "application/json"}
     response_json = spotify_api_request(url, headers)
     if response_json:

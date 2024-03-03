@@ -2,60 +2,46 @@ import bleach
 import pandas as pd
 
 from spotify_api import (
-    get_artist_info,
     get_top_tracks,
-    get_track_info,
     get_audio_features,
     get_first_artist,
 )
 
 
-def display_artist_data(artist_name):
-    artist_id = get_first_artist(bleach.clean(artist_name))
-    artist_details = get_artist_info(artist_id)
+def get_top_tracks_audio_features(artist_name):
+    print("Getting data for", artist_name)
+
+    # get the first artist
+    [artist_id, artist_name] = get_first_artist(bleach.clean(artist_name))
+
+    # get the top tracks
     top_tracks = get_top_tracks(artist_id)
+    top_tracks_df = pd.DataFrame(top_tracks)[["id", "name"]]
 
-    desired_features = [
-        "track_name",
-        "danceability",
-        "energy",
-        "loudness",
-        "speechiness",
-        "acousticness",
-        "instrumentalness",
-        "liveness",
-        "valence",
-        "tempo",
-    ]
+    # get the audio features
+    all_track_ids = ",".join(top_tracks_df["id"].tolist())
+    audio_features = get_audio_features(all_track_ids)["audio_features"]
+    audio_features_df = pd.DataFrame(audio_features)
 
-    audio_features_list = []
-    if top_tracks:
-        for track in top_tracks:
-            track_id = track["id"]
-            track_name = get_track_info(track_id)
-            audio_features = get_audio_features(track_id)
-            if audio_features:
-                audio_features_list.append(
-                    {
-                        "track_name": track_name,
-                        **audio_features,
-                    }
-                )
+    # join the two dataframes
+    top_tracks_df = top_tracks_df.merge(audio_features_df, on="id")
 
-        # Create DataFrame
-        audio_features_df = pd.DataFrame(audio_features_list)
+    # add a column which contains artist name
+    top_tracks_df["artist"] = artist_name
 
-        # Perform some basic EDA (Exploratory Data Analysis)
-        summary_statistics = audio_features_df.describe()
-
-        # Output the DataFrame and summary statistics
-        print(artist_details)
-        print(audio_features_df.loc[:, desired_features])
-        print(summary_statistics)
+    return top_tracks_df
 
 
 if __name__ == "__main__":
-    artist_name = input("Enter the artist name: ")
-    if not artist_name:
-        artist_name = "Geju"
-    display_artist_data(artist_name)
+    # artist_name = input("Enter the artist name: ")
+    artist_list = ["Geju", "Taylor Swift", "Merkaba", "Luke Combs"]
+
+    # Initialize an empty list to hold all DataFrames
+    all_artists_data = []
+
+    for artist_name in artist_list:
+        # Get the DataFrame for the current artist
+        artist_df = get_top_tracks_audio_features(artist_name)
+
+        # append the artist_df to a csv file
+        artist_df.to_csv(f"out/{artist_name}.csv", index=False, mode="w")
