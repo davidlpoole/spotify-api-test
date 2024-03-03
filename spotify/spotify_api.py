@@ -1,22 +1,11 @@
 import os
 import requests
 import time
+from dotenv import load_dotenv
 
 
-def make_spotify_request(endpoint, access_token, params=None):
-    base_url = "https://api.spotify.com/v1/"
-    url = base_url + endpoint
-    headers = {"Authorization": f"Bearer {access_token}"}
+def get_access_token():
 
-    response = requests.get(url, headers=headers, params=params)
-    if response.status_code == 200:
-        return response.json()
-    else:
-        print(f"Failed to retrieve data from {endpoint}.")
-        return None
-
-
-def get_access_token(client_id, client_secret):
     access_token_file = "access_token.txt"
 
     if os.path.exists(access_token_file):
@@ -24,6 +13,10 @@ def get_access_token(client_id, client_secret):
             access_token, expires_at = file.read().split(",")
             if time.time() < float(expires_at):
                 return access_token
+
+    load_dotenv()
+    client_id = os.getenv("CLIENT_ID")
+    client_secret = os.getenv("CLIENT_SECRET")
 
     url = "https://accounts.spotify.com/api/token"
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
@@ -45,41 +38,68 @@ def get_access_token(client_id, client_secret):
         return None
 
 
-def get_first_artist(search_term, access_token):
-    endpoint = "search"
+def spotify_api_request(url, headers, params=None):
+    access_token = get_access_token()
+    headers["Authorization"] = f"Bearer {access_token}"
+    response = requests.get(url, headers=headers, params=params)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print(f"Failed to make API request to {url}.")
+        return None
+
+
+def get_first_artist(search_term):
+    url = "https://api.spotify.com/v1/search"
+    headers = {"Content-Type": "application/json"}
     params = {"q": search_term, "type": "artist", "limit": 1}
-    response = make_spotify_request(endpoint, access_token, params)
-    if response:
-        artists = response["artists"]["items"]
+    response_json = spotify_api_request(url, headers, params)
+    if response_json:
+        artists = response_json.get("artists", {}).get("items", [])
         if artists:
             return artists[0]["id"]
         else:
             print("No artists found.")
             return None
+    else:
+        return None
 
 
-def get_top_tracks(artist_id, access_token):
-    endpoint = f"artists/{artist_id}/top-tracks"
-    response = make_spotify_request(endpoint, access_token)
-    if response:
-        return response["tracks"]
+def get_top_tracks(artist_id):
+    url = f"https://api.spotify.com/v1/artists/{artist_id}/top-tracks"
+    headers = {"Content-Type": "application/json"}
+    response_json = spotify_api_request(url, headers)
+    if response_json:
+        return response_json.get("tracks", [])
+    else:
+        return None
 
 
-def get_track_info(track_id, access_token):
-    endpoint = f"tracks/{track_id}"
-    response = make_spotify_request(endpoint, access_token)
-    if response:
-        return response["name"]
+def get_track_info(track_id):
+    url = f"https://api.spotify.com/v1/tracks/{track_id}"
+    headers = {"Content-Type": "application/json"}
+    response_json = spotify_api_request(url, headers)
+    if response_json:
+        return response_json.get("name")
+    else:
+        return None
 
 
-def get_artist_info(artist_id, access_token):
-    endpoint = f"artists/{artist_id}"
-    response = make_spotify_request(endpoint, access_token)
-    if response:
-        return response["name"]
+def get_artist_info(artist_id):
+    url = f"https://api.spotify.com/v1/artists/{artist_id}"
+    headers = {"Content-Type": "application/json"}
+    response_json = spotify_api_request(url, headers)
+    if response_json:
+        return response_json.get("name")
+    else:
+        return None
 
 
-def get_audio_features(track_id, access_token):
-    endpoint = f"audio-features/{track_id}"
-    response = make_spotify_request(endpoint, access_token)
-    return response
+def get_audio_features(track_id):
+    url = f"https://api.spotify.com/v1/audio-features/{track_id}"
+    headers = {"Content-Type": "application/json"}
+    response_json = spotify_api_request(url, headers)
+    if response_json:
+        return response_json
+    else:
+        return None
