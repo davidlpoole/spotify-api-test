@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spotify Recommender</title>
+</head>
+
+<body>
+    <h1>Seeds</h1>
+    <ul id="seeds-list">
+        {% for seed in seeds %}
+        <li>{{ seed }}</li>
+        {% endfor %}
+    </ul>
+    <form id="add-seed-form" method="post" action="/add-seed">
+        <input type="text" id="seed-artist" name="seed-artist" required>
+        <button type="submit">Add Seed</button>
+    </form>
+</body>
+
+</html>
