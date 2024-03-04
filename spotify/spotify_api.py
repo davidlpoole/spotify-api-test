@@ -63,6 +63,25 @@ def spotify_api_request(url, headers, params=None):
         return response.json()
     else:
         print(f"Failed to make API request to {url}.")
+        print(f"Response status code: {response.status_code}")
+        return None
+
+
+def get_recommendations(
+    seeds_object,
+):
+    """
+    Get recommendations based on seed artists, genres, and tracks.
+    """
+    url = "https://api.spotify.com/v1/recommendations"
+    headers = {"Content-Type": "application/json"}
+
+    seeds_object["limit"] = 10
+    params = seeds_object
+    response_json = spotify_api_request(url, headers, params)
+    if response_json:
+        return response_json
+    else:
         return None
 
 

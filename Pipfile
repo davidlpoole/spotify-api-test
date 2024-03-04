@@ -9,6 +9,7 @@ python-dotenv = "*"
 bleach = "*"
 pandas = "*"
 matplotlib = "*"
+flask = "*"
 
 [dev-packages]
 
