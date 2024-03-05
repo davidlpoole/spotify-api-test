@@ -67,15 +67,45 @@ def spotify_api_request(url, headers, params=None):
         return None
 
 
+def get_artist_ids(artist_list):
+    """
+    Return a list of artist IDs for the given list of artist names.
+
+    :param artist_list: A list of strings representing artist names.
+    :return: A list of artist IDs.
+    """
+    artist_id_list = []
+    for artist_name in artist_list:
+        result = get_first_artist(artist_name)
+
+        if result and result[1].lower() == artist_name.lower():
+            print(f"{artist_name} found.")
+            artist_id_list.append(result[0])
+        else:
+            print(f"{artist_name} not found.")
+
+    return artist_id_list or None
+
+
+def create_seeds_object(artist_list):
+    seeds_object = {"seed_artists": ",".join(artist_list)}
+    return seeds_object
+
+
 def get_recommendations(
     seeds_object,
 ):
     """
-    Get recommendations based on seed artists, genres, and tracks.
+    Get recommendations for the given seeds object using the Spotify API.
+
+    Args:
+        seeds_object (dict): The seeds object containing the artist IDs.
+
+    Returns:
+        dict or None: The recommendations if available, or None if not found.
     """
     url = "https://api.spotify.com/v1/recommendations"
     headers = {"Content-Type": "application/json"}
-
     seeds_object["limit"] = 10
     params = seeds_object
     response_json = spotify_api_request(url, headers, params)
@@ -93,7 +123,7 @@ def get_first_artist(search_term):
     - search_term: A string representing the search term.
 
     Returns:
-    - A string representing the ID of the first artist found, or None if no artists are found.
+    - A object containing the artist ID and name, if found, or None if no artists are found.
     """
     url = "https://api.spotify.com/v1/search"
     headers = {"Content-Type": "application/json"}
