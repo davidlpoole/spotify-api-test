@@ -67,6 +67,22 @@ def spotify_api_request(url, headers, params=None):
         return None
 
 
+def get_artist_ids(artist_list):
+    artist_id_list = []
+    for artist_name in artist_list:
+        result = get_first_artist(artist_name)
+
+        if result:
+            artist_id_list.append(result[0])
+
+    return artist_id_list
+
+
+def create_seeds_object(artist_list):
+    seeds_object = {"seed_artists": ",".join(artist_list)}
+    return seeds_object
+
+
 def get_recommendations(
     seeds_object,
 ):
